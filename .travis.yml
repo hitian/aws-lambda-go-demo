@@ -11,11 +11,8 @@ before_install:
   - pip install --user awscli
   - go get -u ./...
 
-jobs:
-  include:
-    - stage: build
-      script: GOOS=linux GOARCH=amd64 go build -o ./main ./src
-    - stage: create zip
-      script: zip -X -r ./upload.zip ./main
-    - stage: upload
-      script: aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
+script: GOOS=linux GOARCH=amd64 go build -o ./main ./src
+
+deploy:
+  provider: script
+  script: zip -X -r ./upload.zip ./main && aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
