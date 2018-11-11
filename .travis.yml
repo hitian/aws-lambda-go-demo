@@ -9,6 +9,7 @@ env:
 
 before_install:
   - pip install --user awscli
+  - go get -u ./...
 
 jobs:
   include:
