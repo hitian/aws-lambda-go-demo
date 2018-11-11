@@ -1,0 +1,20 @@
+language: go
+
+go:
+  - "1.x"
+
+env:
+  global:
+    - PATH=$HOME/.local/bin:$PATH
+
+before_install:
+  - pip install --user awscli
+
+jobs:
+  include:
+    - stage: build
+      script: GOOS=linux GOARCH=amd64 go build -o ./main ./src
+    - stage: create zip
+      script: zip -X -r ./upload.zip ./main
+    - stage: upload
+      script: aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
