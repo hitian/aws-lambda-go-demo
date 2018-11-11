@@ -16,6 +16,4 @@ script: GOOS=linux GOARCH=amd64 go build -o ./main ./src
 deploy:
   provider: script
   skip_cleanup: true
-  script:
-    - zip -X -r upload.zip main
-    - aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
+  script: zip -X -r upload.zip main && aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
