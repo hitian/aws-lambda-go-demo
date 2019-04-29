@@ -1,12 +1,7 @@
-version: 2.1
+version: 2
 
-executors: # a reusable executor
-  aws:
-    docker:
-      - image: circleci/aws-cli@0.1.13
 jobs:
   build-upload:
-    executor: aws-cli/default
     docker: 
       - image: circleci/golang:latest
     steps:
@@ -14,16 +9,18 @@ jobs:
       - restore_cache: # restores saved cache if no changes are detected since last run
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
-      - run: |
+      - run:
           go mod download
       - run: |
-          GOOS=linux GOARCH=amd64 go build -o ./main ./src
+          make build
       - save_cache:
           key: go-mod-v4-{{ checksum "go.sum" }}
           paths:
             - "/go/pkg/mod"
-      - aws-cli/install
-      - aws-cli/configure
+      - run:
+          name: Install aws cli
+          command:
+              sudo apt-get install -y -qq install awscli
       - run: |
           zip -X -r upload.zip main && aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
 workflows:
