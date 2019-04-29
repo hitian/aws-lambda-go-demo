@@ -13,6 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var (
+	version = "debug"
+)
+
 func routerEngine() *gin.Engine {
 	r := gin.New()
 
@@ -23,6 +27,9 @@ func routerEngine() *gin.Engine {
 	// Define your handlers
 	r.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Hello World!")
+	})
+	r.GET("/version", func(c *gin.Context) {
+		c.String(http.StatusOK, "version: "+version)
 	})
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
