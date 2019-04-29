@@ -4,7 +4,7 @@ jobs:
   go-build:
     docker: 
       - image: circleci/golang:latest
-
+    working_directory: ~/build
     steps:
       - checkout
       - restore_cache: # restores saved cache if no changes are detected since last run
@@ -20,14 +20,21 @@ jobs:
             - "/go/pkg/mod"
       - run: |
           zip -X -r upload.zip main
+      - persist_to_workspace:
+          root: ~/build
+          paths:
+            - upload.zip
   upload-lambda:
     docker: 
       - image: python:alpine
+    working_directory: ~/build
     steps:
       - run:
           name: Install aws cli
           command:
               pip install awscli
+      - attach_workspace:
+          at: ~/build
       - run: |
           aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
 
