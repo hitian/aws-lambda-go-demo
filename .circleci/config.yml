@@ -1,0 +1,25 @@
+version: 2
+orbs:
+  aws-cli: circleci/aws-cli@0.1.13
+
+jobs:
+  build-upload:
+    executor: aws-cli/default
+    docker: 
+      - image: circleci/golang:latest
+    steps:
+      - checkout
+      - run: |
+          go mod download
+      - run: |
+          GOOS=linux GOARCH=amd64 go build -o ./main ./src
+      - run: |
+          zip -X -r upload.zip main && aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
+workflows:
+  version: 2
+  update-aws-lambda:
+    jobs:
+      - build-upload:
+          filters:
+            branches:
+              only: master
