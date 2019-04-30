@@ -26,13 +26,9 @@ jobs:
             - upload.zip
   upload-lambda:
     docker: 
-      - image: python:alpine
+      - image: hitian/awscli:latest
     working_directory: ~/build
     steps:
-      - run:
-          name: Install aws cli
-          command:
-              pip install awscli
       - attach_workspace:
           at: ~/build
       - run: |
