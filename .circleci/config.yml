@@ -11,7 +11,7 @@ jobs:
           keys:
             - go-mod-v4-{{ checksum "go.sum" }}
       - run:
-          go mod download
+          go test aws-lambda-go-demo/src -v
       - run: |
           make build
       - save_cache:
