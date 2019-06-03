@@ -59,6 +59,10 @@ func routerEngine() *gin.Engine {
 		c.JSON(http.StatusOK, headers)
 	})
 
+	r.GET("/proto", func(c *gin.Context) {
+		c.String(http.StatusOK, "Proto: %s", c.Request.Proto)
+	})
+
 	r.GET("/date", func(c *gin.Context) {
 		c.String(http.StatusOK, time.Now().Format(time.RFC3339))
 	})

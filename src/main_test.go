@@ -33,6 +33,7 @@ func TestAPI(t *testing.T) {
 		"/check_status",
 		"/dns/github.com",
 		"/generate_204",
+		"/proto",
 	}
 
 	for _, uri := range apis {
