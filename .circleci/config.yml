@@ -19,7 +19,7 @@ jobs:
           paths:
             - "/go/pkg/mod"
       - run: |
-          zip -X -r upload.zip main
+          zip -X -r upload.zip main geoip/GeoLite2-City.mmdb
       - persist_to_workspace:
           root: ~/build
           paths:
