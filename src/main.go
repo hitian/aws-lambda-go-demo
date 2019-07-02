@@ -143,7 +143,7 @@ func routerEngine() *gin.Engine {
 		result += fmt.Sprintf("City: %s\n", record.City.Names[lang])
 		//Subdivisions
 		if len(record.Subdivisions) > 0 {
-			result += fmt.Sprintf("Subdivisions: %s\n", record.Subdivisions[0].Names["en"])
+			result += fmt.Sprintf("Subdivisions: %s\n", record.Subdivisions[0].Names[lang])
 		}
 		//Country
 		result += fmt.Sprintf("Country: %s\n", record.Country.Names[lang])
