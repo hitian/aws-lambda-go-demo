@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -110,48 +111,29 @@ func routerEngine() *gin.Engine {
 		}
 		c.JSON(http.StatusOK, resp)
 	})
+	r.GET("/geoip", func(c *gin.Context) {
+		addr := c.GetHeader("X-Forwarded-For")
+		if addr == "" {
+			ip, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+			addr = ip
+		}
+		result, err := geoipQuery(addr, c)
+		if err != nil {
+			log.Println("Error: ", err)
+			c.String(http.StatusBadRequest, result)
+			return
+		}
+		result = addr + "\n" + result
+		c.String(http.StatusOK, result)
+	})
 	r.GET("/geoip/:ip", func(c *gin.Context) {
-		ip := net.ParseIP(c.Param("ip"))
-		if ip == nil {
-			c.String(http.StatusBadRequest, "ip parse failed")
+		addr := c.Param("ip")
+		result, err := geoipQuery(addr, c)
+		if err != nil {
+			log.Println("Error: ", err)
+			c.String(http.StatusBadRequest, result)
 			return
 		}
-		db, err := geoip2.Open("geoip/GeoLite2-City.mmdb")
-		if err != nil {
-			c.String(http.StatusGone, "geoip db read failed.")
-			log.Fatal(err)
-		}
-		defer db.Close()
-		// If you are using strings that may be invalid, check that ip is not nil
-		record, err := db.City(ip)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		if strings.ToLower(c.Query("view")) == "json" {
-			c.JSON(http.StatusOK, record)
-			return
-		}
-
-		lang := c.Query("lang")
-		if lang == "" {
-			lang = "en"
-		}
-
-		var result string
-		//city
-		result += fmt.Sprintf("City: %s\n", record.City.Names[lang])
-		//Subdivisions
-		if len(record.Subdivisions) > 0 {
-			result += fmt.Sprintf("Subdivisions: %s\n", record.Subdivisions[0].Names[lang])
-		}
-		//Country
-		result += fmt.Sprintf("Country: %s\n", record.Country.Names[lang])
-		//Continent
-		result += fmt.Sprintf("Continent: %s\n", record.Continent.Names[lang])
-		result += fmt.Sprintf("ISO country code: %v\n", record.Country.IsoCode)
-		result += fmt.Sprintf("Time zone: %v\n", record.Location.TimeZone)
-		result += fmt.Sprintf("Coordinates: %v, %v\n", record.Location.Latitude, record.Location.Longitude)
 		c.String(http.StatusOK, result)
 	})
 
@@ -170,6 +152,44 @@ func main() {
 	}
 	log.Println("listen: ", addr)
 	log.Fatal(gateway.ListenAndServe(addr, routerEngine()))
+}
+
+func geoipQuery(addr string, c *gin.Context) (string, error) {
+	ip := net.ParseIP(addr)
+	if ip == nil {
+		return "ip parse failed", errors.New("ip parse failed: " + addr)
+	}
+	db, err := geoip2.Open("geoip/GeoLite2-City.mmdb")
+	if err != nil {
+		return "geoip db read failed", err
+	}
+	defer db.Close()
+	// If you are using strings that may be invalid, check that ip is not nil
+	record, err := db.City(ip)
+	if err != nil {
+		return "geoip record query failed.", err
+	}
+
+	lang := c.Query("lang")
+	if lang == "" {
+		lang = "en"
+	}
+
+	var result string
+	//city
+	result += fmt.Sprintf("City: %s\n", record.City.Names[lang])
+	//Subdivisions
+	if len(record.Subdivisions) > 0 {
+		result += fmt.Sprintf("Subdivisions: %s\n", record.Subdivisions[0].Names[lang])
+	}
+	//Country
+	result += fmt.Sprintf("Country: %s\n", record.Country.Names[lang])
+	//Continent
+	result += fmt.Sprintf("Continent: %s\n", record.Continent.Names[lang])
+	result += fmt.Sprintf("ISO country code: %v\n", record.Country.IsoCode)
+	result += fmt.Sprintf("Time zone: %v\n", record.Location.TimeZone)
+	result += fmt.Sprintf("Coordinates: %v, %v\n", record.Location.Latitude, record.Location.Longitude)
+	return result, nil
 }
 
 // Resp common response struct
