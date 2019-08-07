@@ -4,12 +4,14 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"net"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/OrlovEvgeny/go-mcache"
 	"github.com/apex/gateway"
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
@@ -137,6 +139,43 @@ func routerEngine() *gin.Engine {
 		c.String(http.StatusOK, result)
 	})
 
+	r.POST("/store", func(c *gin.Context) {
+		raw, err := c.GetRawData()
+		if err != nil {
+			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		if len(raw) > 1024*1024 {
+			c.String(http.StatusBadRequest, "data size over limit")
+			return
+		}
+		hash, err := storeSet(raw)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		c.String(http.StatusOK, "ok, addr %s://%s/store/%s , expire in ONE minute.", c.GetHeader("X-Forwarded-Proto"), c.GetHeader("Host"), hash)
+	})
+
+	r.GET("/store/:hash", func(c *gin.Context) {
+		hash := c.Param("hash")
+		if len(hash) != storeKeyLength {
+			c.String(http.StatusBadRequest, "hash format error")
+			return
+		}
+		value, err := storeGet(hash)
+		if err != nil {
+			c.String(http.StatusInternalServerError, err.Error())
+			return
+		}
+		if value == nil {
+			c.String(http.StatusNotFound, "hash not found")
+			return
+		}
+		c.Data(http.StatusOK, "application/octet-stream", value)
+	})
+
 	return r
 }
 
@@ -194,3 +233,38 @@ func geoipQuery(addr string, c *gin.Context) (string, error) {
 
 // Resp common response struct
 type Resp map[string]string
+
+var randomStringRunes = []rune("abcdefghijklmnopqrstuvwxyz1234567890_")
+var randomStringRunesCount = len(randomStringRunes)
+
+func generateRandomString(length int) string {
+	rand.Seed(time.Now().UnixNano())
+	s := make([]rune, length)
+	for i := range s {
+		s[i] = randomStringRunes[rand.Intn(randomStringRunesCount)]
+	}
+	return string(s)
+}
+
+var storeMem = mcache.New()
+var storeKeyLength = 5
+
+func storeSet(data []byte) (string, error) {
+	key := generateRandomString(storeKeyLength)
+	if err := storeMem.Set(key, data, time.Minute); err != nil {
+		return "", nil
+	}
+	return key, nil
+}
+
+func storeGet(hash string) ([]byte, error) {
+	result, ok := storeMem.Get(hash)
+	if !ok {
+		return nil, nil
+	}
+	value, ok := result.([]byte)
+	if !ok {
+		return nil, nil
+	}
+	return value, nil
+}
