@@ -1,3 +1,5 @@
+github.com/OrlovEvgeny/go-mcache v0.0.0-20190520090815-302f7b82bb96 h1:w2Ra9fsbiW5KadQZSIj+4fSP9mEg27MXThAi+XC6JXY=
+github.com/OrlovEvgeny/go-mcache v0.0.0-20190520090815-302f7b82bb96/go.mod h1:9X0sgxPdm23rjgP2JD9uS+0QL2EEpQKRgABK3+BQ81A=
 github.com/apex/gateway v1.1.1 h1:dPE3y2LQ/fSJuZikCOvekqXLyn/Wrbgt10MSECobH/Q=
 github.com/apex/gateway v1.1.1/go.mod h1:x7iPY22zu9D8sfrynawEwh1wZEO/kQTRaOM5ye02tWU=
 github.com/aws/aws-lambda-go v1.10.0 h1:uafgdfYGQD0UeT7d2uKdyWW8j/ZYRifRPIdmeqLzLCk=
@@ -12,8 +14,6 @@ github.com/golang/protobuf v1.3.1 h1:YF8+flBXS5eO826T4nzqPrxfhQThhXl0YzfuUPu4SBg
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/json-iterator/go v1.1.6 h1:MrUvLMLTMxbqFJ9kzlvat/rYZqZnW3u4wkLzWTaFwKs=
 github.com/json-iterator/go v1.1.6/go.mod h1:+SdeFBvtyEkXs7REEP0seUULqWtbJapLOCVDaaPEHmU=
-github.com/magiconair/properties v1.8.1 h1:ZC2Vc7/ZFkGmsVC9KvOjumD+G5lXy2RtTKyzRKO2BQ4=
-github.com/magiconair/properties v1.8.1/go.mod h1:PppfXfuXeibc/6YijjN8zIbojt8czPbwD3XqdrwzmxQ=
 github.com/mattn/go-isatty v0.0.7 h1:UvyT9uN+3r7yLEYSlJsbQGdsaB/a0DlgWP3pql6iwOc=
 github.com/mattn/go-isatty v0.0.7/go.mod h1:Iq45c/XA43vh69/j3iqttzPXn0bhXyGjM0Hdxcsrc5s=
 github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd h1:TRLaZ9cD/w8PVh93nsPXa1VrQ6jlwL5oN8l14QlcNfg=
