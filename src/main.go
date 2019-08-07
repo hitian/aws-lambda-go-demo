@@ -175,7 +175,7 @@ func routerEngine() *gin.Engine {
 			return
 		}
 		log.Printf("out: %s\n", string(value))
-		c.Data(http.StatusOK, "application/octet-stream", value)
+		c.Data(http.StatusOK, "text/plain", value)
 	})
 
 	return r
