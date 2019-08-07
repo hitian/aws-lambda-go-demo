@@ -149,6 +149,7 @@ func routerEngine() *gin.Engine {
 			c.String(http.StatusBadRequest, "data size over limit")
 			return
 		}
+		log.Printf("in: %s\n", string(raw))
 		hash, err := storeSet(raw)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
@@ -173,6 +174,7 @@ func routerEngine() *gin.Engine {
 			c.String(http.StatusNotFound, "hash not found")
 			return
 		}
+		log.Printf("out: %s\n", string(value))
 		c.Data(http.StatusOK, "application/octet-stream", value)
 	})
 
