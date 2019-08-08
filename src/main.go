@@ -251,7 +251,7 @@ var storeKeyLength = 5
 
 func storeSet(data []byte) (string, error) {
 	key := generateRandomString(storeKeyLength)
-	if err := storeMem.Set(key, data, time.Minute); err != nil {
+	if err := storeMem.Set(key, data, time.Minute*10); err != nil {
 		return "", nil
 	}
 	return key, nil
