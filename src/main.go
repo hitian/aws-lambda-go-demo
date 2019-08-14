@@ -8,6 +8,7 @@ import (
 	"net"
 	"net/http"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 
@@ -38,7 +39,7 @@ func routerEngine() *gin.Engine {
 		c.String(http.StatusOK, "Hello World!")
 	})
 	r.GET("/version", func(c *gin.Context) {
-		c.String(http.StatusOK, "version: "+version)
+		c.String(http.StatusOK, "version: "+version+", "+runtime.Version())
 	})
 	r.GET("/ping", func(c *gin.Context) {
 		c.String(http.StatusOK, "pong")
