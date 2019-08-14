@@ -32,7 +32,7 @@ jobs:
       - attach_workspace:
           at: ~/build
       - run: |
-          aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip
+          aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip > /dev/null
 
 workflows:
   version: 2

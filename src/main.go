@@ -17,6 +17,11 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
+const (
+	storeSizeLimit  = 10 * 1024 * 1024 //10 Mb
+	storeExpireTime = 5                //minute
+)
+
 var (
 	version = "debug"
 )
@@ -145,7 +150,7 @@ func routerEngine() *gin.Engine {
 			c.String(http.StatusBadRequest, err.Error())
 			return
 		}
-		if len(raw) > 1024*1024 {
+		if len(raw) > storeSizeLimit {
 			c.String(http.StatusBadRequest, "data size over limit")
 			return
 		}
@@ -155,7 +160,7 @@ func routerEngine() *gin.Engine {
 			return
 		}
 
-		c.String(http.StatusOK, "ok, addr %s://%s/store/%s , expire in ONE minute.", c.GetHeader("X-Forwarded-Proto"), c.GetHeader("Host"), hash)
+		c.String(http.StatusOK, "ok, addr %s://%s/store/%s , expire in %d minute.", c.GetHeader("X-Forwarded-Proto"), c.GetHeader("Host"), hash, storeExpireTime)
 	})
 
 	r.GET("/store/:hash", func(c *gin.Context) {
@@ -251,7 +256,7 @@ var storeKeyLength = 5
 
 func storeSet(data []byte) (string, error) {
 	key := generateRandomString(storeKeyLength)
-	if err := storeMem.Set(key, data, time.Minute); err != nil {
+	if err := storeMem.Set(key, data, time.Minute*time.Duration(storeExpireTime)); err != nil {
 		return "", nil
 	}
 	return key, nil
