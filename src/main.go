@@ -24,7 +24,8 @@ const (
 )
 
 var (
-	version = "debug"
+	version   = "debug"
+	startTime = time.Now()
 )
 
 func routerEngine() *gin.Engine {
@@ -182,6 +183,27 @@ func routerEngine() *gin.Engine {
 		c.Data(http.StatusOK, "text/plain", value)
 	})
 
+	r.GET("/sysinfo", func(c *gin.Context) {
+		resp := make(map[string]interface{})
+		resp["version"] = version
+		resp["num_goroutine"] = runtime.NumGoroutine()
+		resp["go_version"] = runtime.Version()
+		resp["start_time"] = startTime
+
+		//memory info
+		var m runtime.MemStats
+		runtime.ReadMemStats(&m)
+
+		resp["memory"] = map[string]interface{}{
+			"alloc":       printMemSize(m.Alloc),
+			"total_alloc": printMemSize(m.TotalAlloc),
+			"sys":         printMemSize(m.Sys),
+			"num_gc":      m.NumGC,
+		}
+
+		c.JSON(http.StatusOK, resp)
+	})
+
 	return r
 }
 
@@ -273,4 +295,17 @@ func storeGet(hash string) ([]byte, error) {
 		return nil, nil
 	}
 	return value, nil
+}
+
+func printMemSize(size uint64) string {
+	m := []string{"b", "kb", "mb", "gb"}
+	curr := 0
+	val := float64(size)
+	for {
+		if val < 1024 || curr >= len(m)-1 {
+			return fmt.Sprintf("%.2f %s", val, m[curr])
+		}
+		val /= 1024
+		curr++
+	}
 }

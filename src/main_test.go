@@ -50,3 +50,14 @@ func TestAPI(t *testing.T) {
 	}
 
 }
+
+func TestPrintMemSize(t *testing.T) {
+	assert.Equal(t, printMemSize(100), "100.00 b")
+	assert.Equal(t, printMemSize(1024), "1.00 kb")
+	assert.Equal(t, printMemSize(1024*1024), "1.00 mb")
+	assert.Equal(t, printMemSize(1024*1024+1), "1.00 mb")
+	assert.Equal(t, printMemSize(1024*1024*1024), "1.00 gb")
+	assert.Equal(t, printMemSize(1024*1024*1024+100), "1.00 gb")
+	assert.Equal(t, printMemSize(1024*1024*1024*1024+1), "1024.00 gb")
+	assert.Equal(t, printMemSize(1025*1024*1024*1024), "1025.00 gb")
+}
