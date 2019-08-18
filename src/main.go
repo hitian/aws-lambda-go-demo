@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"log"
@@ -180,7 +181,8 @@ func routerEngine() *gin.Engine {
 			c.String(http.StatusNotFound, "hash not found")
 			return
 		}
-		c.Data(http.StatusOK, "text/plain", value)
+		c.Header("X-Hash-SHA256", fmt.Sprintf("%x", sha256.Sum256(value)))
+		c.Data(http.StatusOK, "application/octet-stream", value)
 	})
 
 	r.GET("/sysinfo", func(c *gin.Context) {
@@ -208,7 +210,7 @@ func routerEngine() *gin.Engine {
 }
 
 func main() {
-	addr := ":8000"
+	addr := "127.0.0.1:8000"
 	if os.Getenv("PORT") != "" {
 		addr = ":" + os.Getenv("PORT")
 	}
