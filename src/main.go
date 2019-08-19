@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	storeSizeLimit  = 10 * 1024 * 1024 //10 Mb
+	storeSizeLimit  = 30 * 1024 * 1024 //10 Mb
 	storeExpireTime = 5                //minute
 )
 
@@ -151,6 +151,10 @@ func routerEngine() *gin.Engine {
 		raw, err := c.GetRawData()
 		if err != nil {
 			c.String(http.StatusBadRequest, err.Error())
+			return
+		}
+		if len(raw) < 1 {
+			c.String(http.StatusBadRequest, "request empty")
 			return
 		}
 		if len(raw) > storeSizeLimit {
