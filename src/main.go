@@ -182,7 +182,21 @@ func routerEngine() *gin.Engine {
 			return
 		}
 		c.Header("X-Hash-SHA256", fmt.Sprintf("%x", sha256.Sum256(value)))
-		c.Data(http.StatusOK, "application/octet-stream", value)
+
+		//let user set content type.
+		contentType := "application/octet-stream"
+		output := c.Query("output")
+		switch output {
+		case "text", "txt", "plain":
+			contentType = "text/plain"
+		case "html", "htm":
+			contentType = "text/html"
+		case "png":
+			contentType = "image/png"
+		case "jpg", "jpeg":
+			contentType = "image/jpeg"
+		}
+		c.Data(http.StatusOK, contentType, value)
 	})
 
 	r.GET("/sysinfo", func(c *gin.Context) {
