@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - master
+name: github package registry build
+jobs:
+  buildAndPush:
+    name: build-github-registry
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: login
+      uses: actions/docker/login@master
+      env:
+        DOCKER_REGISTRY_URL: docker.pkg.github.com
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_REG_TOKEN }}
+        DOCKER_USERNAME: hitian
+    - name: Build docker image
+      uses: docker://docker:stable
+      with:
+        args: build -t docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server:latest .
+    - name: Push docker image to docker hub
+      uses: docker://docker:stable
+      with:
+        args: push docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server
