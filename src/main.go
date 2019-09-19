@@ -167,7 +167,7 @@ func routerEngine() *gin.Engine {
 			return
 		}
 
-		c.String(http.StatusOK, "save ok, hash is %s , addr %s://%s/store/%s , expire in %d minute.", hash, c.GetHeader("X-Forwarded-Proto"), c.GetHeader("Host"), hash, storeExpireTime)
+		c.String(http.StatusOK, "save ok, hash is %s , addr %s://%s/store/%s , expire in %d minute.", hash, c.GetHeader("X-Forwarded-Proto"), getRequestHostname(c), hash, storeExpireTime)
 	})
 
 	r.GET("/store/:hash", func(c *gin.Context) {
@@ -328,4 +328,11 @@ func printMemSize(size uint64) string {
 		val /= 1024
 		curr++
 	}
+}
+
+func getRequestHostname(c *gin.Context) string {
+	if c.GetHeader("X-Forwarded-Host") != "" {
+		return c.GetHeader("X-Forwarded-Host")
+	}
+	return c.GetHeader("Host")
 }
