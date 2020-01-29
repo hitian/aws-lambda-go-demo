@@ -9,17 +9,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - name: login
-      uses: actions/docker/login@master
+    - name: build and push to github pkg
+      run: |
+        docker version
+        docker build -t docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server:latest .
+        echo "$DOCKER_PASSWORD" | docker login "$DOCKER_REGISTRY_URL" --username "$DOCKER_USERNAME" --password-stdin
+        docker push docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server
       env:
         DOCKER_REGISTRY_URL: docker.pkg.github.com
         DOCKER_PASSWORD: ${{ secrets.DOCKER_REG_TOKEN }}
         DOCKER_USERNAME: hitian
-    - name: Build docker image
-      uses: docker://docker:stable
-      with:
-        args: build -t docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server:latest .
-    - name: Push docker image to docker hub
-      uses: docker://docker:stable
-      with:
-        args: push docker.pkg.github.com/hitian/aws-lambda-go-demo/demo-server
