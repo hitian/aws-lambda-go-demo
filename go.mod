@@ -1,11 +1,11 @@
 module aws-lambda-go-demo
 
-go 1.14
+go 1.15
 
 require (
 	github.com/OrlovEvgeny/go-mcache v0.0.0-20200121124330-1a8195b34f3a
 	github.com/apex/gateway v1.1.1
-	github.com/aws/aws-lambda-go v1.17.0 // indirect
+	github.com/aws/aws-lambda-go v1.19.1 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/golang/protobuf v1.4.2 // indirect
@@ -17,7 +17,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.6.1
 	github.com/tj/assert v0.0.3 // indirect
-	golang.org/x/sys v0.0.0-20200625212154-ddb9806d33ae // indirect
+	golang.org/x/sys v0.0.0-20200821140526-fda516888d29 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0 // indirect
 )

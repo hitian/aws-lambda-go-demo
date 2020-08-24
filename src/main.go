@@ -96,7 +96,7 @@ func routerEngine() *gin.Engine {
 
 	r.GET("/dns/:domains", func(c *gin.Context) {
 		domains := c.Param("domains")
-		resp := Resp{}
+		resp := make(map[string][]string)
 		if domains == "" {
 			c.JSON(http.StatusOK, resp)
 			return
@@ -104,20 +104,21 @@ func routerEngine() *gin.Engine {
 		for _, domain := range strings.Split(domains, ",") {
 			ipAddrs, err := net.LookupIP(domain)
 			if err != nil {
-				resp[domain] = fmt.Sprintf("ERR: %s", err)
+				resp[domain] = []string{fmt.Sprintf("ERR: %s", err)}
 				continue
 			}
 
-			var addr string
+			var addrs []string
 			for _, ipAddr := range ipAddrs {
-				ipv4 := ipAddr.To4()
-				if ipv4 == nil {
+				if ipv4 := ipAddr.To4(); ipv4 != nil {
+					addrs = append(addrs, ipv4.String())
 					continue
 				}
-				addr = ipv4.String()
-				break
+				if ipv6 := ipAddr.To16(); ipv6 != nil {
+					addrs = append(addrs, ipv6.String())
+				}
 			}
-			resp[domain] = addr
+			resp[domain] = addrs
 		}
 		c.JSON(http.StatusOK, resp)
 	})
