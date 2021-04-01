@@ -90,6 +90,9 @@ func routerEngine() *gin.Engine {
 		c.JSON(http.StatusOK, resp)
 	})
 
+	r.HEAD("/generate_204", func(c *gin.Context) {
+		c.Status(http.StatusNoContent)
+	})
 	r.GET("/generate_204", func(c *gin.Context) {
 		c.Status(http.StatusNoContent)
 	})
