@@ -1,0 +1,29 @@
+version: 2
+
+jobs:
+  go-build:
+    docker:
+      - image: circleci/golang:latest
+    working_directory: ~/build
+    steps:
+      - checkout
+      - restore_cache: # restores saved cache if no changes are detected since last run
+          keys:
+            - go-mod-v4-{{ checksum "go.sum" }}
+      - run:
+          go test aws-lambda-go-demo/src -v
+      - run: |
+          make build
+      - save_cache:
+          key: go-mod-v4-{{ checksum "go.sum" }}
+          paths:
+            - "/go/pkg/mod"
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - go-build:
+          filters:
+            branches:
+              only: master
