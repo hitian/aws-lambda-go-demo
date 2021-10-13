@@ -26,7 +26,7 @@ jobs:
             - upload.zip
   upload-lambda:
     docker: 
-      - image: hitian/awscli:latest
+      - image: ghcr.io/hitian/awscli:master
     working_directory: ~/build
     steps:
       - attach_workspace:
