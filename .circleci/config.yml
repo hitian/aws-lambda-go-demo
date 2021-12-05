@@ -29,12 +29,14 @@ jobs:
       - image: amazon/aws-cli:latest
     working_directory: ~/build
     steps:
-      - attach_workspace:
-          at: ~/build
       - run:
           name: Install tar utility
           command: |
             yum install -y tar gzip
+      
+      - attach_workspace:
+          at: ~/build
+      
       - run: |
           aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip > /dev/null
 
