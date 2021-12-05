@@ -31,6 +31,10 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/build
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - run: |
           aws lambda update-function-code --function-name $FUNCTION_NAME --zip-file fileb://upload.zip > /dev/null
 
