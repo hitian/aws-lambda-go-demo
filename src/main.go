@@ -126,18 +126,25 @@ func routerEngine() *gin.Engine {
 		c.JSON(http.StatusOK, resp)
 	})
 	r.GET("/geoip", func(c *gin.Context) {
+		var target string
 		addr := c.GetHeader("X-Forwarded-For")
-		if addr == "" {
-			ip, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
-			addr = ip
+		if addr != "" {
+			ips := strings.Split(addr, ", ")
+			if len(ips) > 1 {
+				target = ips[0]
+			}
 		}
-		result, err := geoipQuery(addr, c)
+		if target == "" {
+			ip, _, _ := net.SplitHostPort(c.Request.RemoteAddr)
+			target = ip
+		}
+		result, err := geoipQuery(target, c)
 		if err != nil {
 			log.Println("Error: ", err)
 			c.String(http.StatusBadRequest, result)
 			return
 		}
-		result = addr + "\n" + result
+		result = target + "\n" + result
 		c.String(http.StatusOK, result)
 	})
 	r.GET("/geoip/:ip", func(c *gin.Context) {
