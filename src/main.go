@@ -130,7 +130,7 @@ func routerEngine() *gin.Engine {
 		addr := c.GetHeader("X-Forwarded-For")
 		if addr != "" {
 			ips := strings.Split(addr, ", ")
-			if len(ips) > 1 {
+			if len(ips) >= 1 {
 				target = ips[0]
 			}
 		}
