@@ -28,8 +28,3 @@ jobs:
           aws_region: ${{ secrets.AWS_REGION }}
           function_name: go-demo
           zip_file: upload.zip
-          memory_size: 128
-          timeout: 10
-          handler: main
-          role: ${{ secrets.AWS_ROLE }}
-          runtime: go1.x
