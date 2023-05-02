@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/OrlovEvgeny/go-mcache"
-	"github.com/apex/gateway"
+	"github.com/apex/gateway/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
 )

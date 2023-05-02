@@ -4,10 +4,9 @@ go 1.20
 
 require (
 	github.com/OrlovEvgeny/go-mcache v0.0.0-20200121124330-1a8195b34f3a
-	github.com/apex/gateway v1.1.2
-	github.com/aws/aws-lambda-go v1.39.1 // indirect
+	github.com/aws/aws-lambda-go v1.40.0 // indirect
 	github.com/gin-gonic/gin v1.9.0
-	github.com/go-playground/validator/v10 v10.12.0 // indirect
+	github.com/go-playground/validator/v10 v10.13.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
@@ -20,8 +19,10 @@ require (
 	google.golang.org/protobuf v1.30.0 // indirect
 )
 
+require github.com/apex/gateway/v2 v2.0.0
+
 require (
-	github.com/bytedance/sonic v1.8.7 // indirect
+	github.com/bytedance/sonic v1.8.8 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
@@ -29,7 +30,7 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.4 // indirect
-	github.com/leodido/go-urn v1.2.3 // indirect
+	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/oschwald/maxminddb-golang v1.10.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.7 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
