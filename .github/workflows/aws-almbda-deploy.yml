@@ -1,5 +1,8 @@
 name: deploy to lambda
-on: [push]
+on:
+  push:
+    branches:
+      - master
 jobs:
 
   deploy_zip:
@@ -7,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go-version: [1.21.x]
+        go-version: [1.22.x]
     steps:
       - name: checkout source code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go-version }}
       - name: Build binary
