@@ -52,12 +52,23 @@ func TestAPI(t *testing.T) {
 }
 
 func TestPrintMemSize(t *testing.T) {
-	assert.Equal(t, printMemSize(100), "100.00 b")
-	assert.Equal(t, printMemSize(1024), "1.00 kb")
-	assert.Equal(t, printMemSize(1024*1024), "1.00 mb")
-	assert.Equal(t, printMemSize(1024*1024+1), "1.00 mb")
-	assert.Equal(t, printMemSize(1024*1024*1024), "1.00 gb")
-	assert.Equal(t, printMemSize(1024*1024*1024+100), "1.00 gb")
-	assert.Equal(t, printMemSize(1024*1024*1024*1024+1), "1024.00 gb")
-	assert.Equal(t, printMemSize(1025*1024*1024*1024), "1025.00 gb")
+	tests := []struct {
+		input    uint64
+		expected string
+	}{
+		{100, "100.0000 B"},
+		{1024, "1.0000 KB"},
+		{1024 * 1024, "1.0000 MB"},
+		{1024*1024 + 1, "1.0000 MB"},
+		{1024 * 1024 * 1024, "1.0000 GB"},
+		{(1024+2)*1024*1024 + 100, "1.0019 GB"},
+		{1024*1024*1024*1024 + 1, "1.0000 TB"},
+		{1025 * 1024 * 1024 * 1024, "1.0009 TB"},
+	}
+
+	for _, tt := range tests {
+		t.Run(fmt.Sprintf("printMemSize(%d)", tt.input), func(t *testing.T) {
+			assert.Equal(t, tt.expected, printMemSize(tt.input))
+		})
+	}
 }
