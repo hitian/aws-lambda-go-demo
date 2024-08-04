@@ -297,10 +297,10 @@ var randomStringRunes = []rune("abcdefghijklmnopqrstuvwxyz1234567890_")
 var randomStringRunesCount = len(randomStringRunes)
 
 func generateRandomString(length int) string {
-	rand.Seed(time.Now().UnixNano())
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	s := make([]rune, length)
 	for i := range s {
-		s[i] = randomStringRunes[rand.Intn(randomStringRunesCount)]
+		s[i] = randomStringRunes[r.Intn(randomStringRunesCount)]
 	}
 	return string(s)
 }
@@ -328,17 +328,15 @@ func storeGet(hash string) ([]byte, error) {
 	return value, nil
 }
 
-func printMemSize(size uint64) string {
-	m := []string{"b", "kb", "mb", "gb"}
-	curr := 0
-	val := float64(size)
-	for {
-		if val < 1024 || curr >= len(m)-1 {
-			return fmt.Sprintf("%.2f %s", val, m[curr])
-		}
-		val /= 1024
-		curr++
+func printMemSize(bytes uint64) string {
+	units := []string{"B", "KB", "MB", "GB", "TB"}
+
+	i := 0
+	for ; bytes >= 1024 && i < len(units); i++ {
+		bytes /= 1024
 	}
+
+	return fmt.Sprintf("%.4f %s", float64(bytes), units[i])
 }
 
 func getRequestHostname(c *gin.Context) string {
