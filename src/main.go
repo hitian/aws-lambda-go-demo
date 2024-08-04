@@ -332,11 +332,12 @@ func printMemSize(bytes uint64) string {
 	units := []string{"B", "KB", "MB", "GB", "TB"}
 
 	i := 0
-	for ; bytes >= 1024 && i < len(units); i++ {
-		bytes /= 1024
+	size := float64(bytes)
+	for ; size >= 1024 && i < len(units)-1; i++ {
+		size /= 1024
 	}
 
-	return fmt.Sprintf("%.4f %s", float64(bytes), units[i])
+	return fmt.Sprintf("%.2f %s", size, units[i])
 }
 
 func getRequestHostname(c *gin.Context) string {
