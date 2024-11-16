@@ -1,7 +1,7 @@
 FROM golang:alpine as builder
 WORKDIR /build
 ADD . .
-RUN GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X main.version=`date +'%Y-%m-%d_%H_%M_%S'`" -o /go/bin/demo-server ./src
+RUN GOOS=linux go build -ldflags="-s -w -X main.version=`date +'%Y-%m-%d_%H_%M_%S'`" -o /go/bin/demo-server ./src
 
 FROM alpine:latest
 WORKDIR /app
