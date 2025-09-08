@@ -75,3 +75,6 @@ Temporary Items
 .history
 
 # End of https://www.gitignore.io/api/go,linux,macos,visualstudiocode
+
+# Local build cache
+.cache/
