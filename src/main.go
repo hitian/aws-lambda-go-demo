@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"os"
 	"runtime"
+	"sync"
 	"strings"
 	"time"
 
-	"github.com/OrlovEvgeny/go-mcache"
 	"github.com/apex/gateway/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/oschwald/geoip2-golang"
@@ -305,27 +305,115 @@ func generateRandomString(length int) string {
 	return string(s)
 }
 
-var storeMem = mcache.New()
+type storeItem struct {
+	value    []byte
+	expireAt time.Time
+}
+
+type storeCache struct {
+	mu              sync.RWMutex
+	data            map[string]storeItem
+	cleanupInterval time.Duration
+	stopCh          chan struct{}
+}
+
+func newStoreCache(cleanupInterval time.Duration) *storeCache {
+	cache := &storeCache{
+		data:            make(map[string]storeItem),
+		cleanupInterval: cleanupInterval,
+		stopCh:          make(chan struct{}),
+	}
+	go cache.cleanupLoop()
+	return cache
+}
+
+func (c *storeCache) set(key string, value []byte, ttl time.Duration) {
+	var expireAt time.Time
+	if ttl > 0 {
+		expireAt = time.Now().Add(ttl)
+	}
+	c.mu.Lock()
+	c.data[key] = storeItem{value: value, expireAt: expireAt}
+	c.mu.Unlock()
+}
+
+func (c *storeCache) get(key string) ([]byte, bool) {
+	c.mu.RLock()
+	item, ok := c.data[key]
+	c.mu.RUnlock()
+	if !ok {
+		return nil, false
+	}
+	if item.expireAt.IsZero() {
+		return item.value, true
+	}
+	if time.Now().After(item.expireAt) {
+		c.mu.Lock()
+		delete(c.data, key)
+		c.mu.Unlock()
+		return nil, false
+	}
+	return item.value, true
+}
+
+func (c *storeCache) has(key string) bool {
+	c.mu.RLock()
+	item, ok := c.data[key]
+	c.mu.RUnlock()
+	if !ok {
+		return false
+	}
+	if item.expireAt.IsZero() {
+		return true
+	}
+	return time.Now().Before(item.expireAt)
+}
+
+func (c *storeCache) cleanupLoop() {
+	ticker := time.NewTicker(c.cleanupInterval)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			c.evictExpired()
+		case <-c.stopCh:
+			return
+		}
+	}
+}
+
+func (c *storeCache) evictExpired() {
+	now := time.Now()
+	c.mu.Lock()
+	for key, item := range c.data {
+		if !item.expireAt.IsZero() && now.After(item.expireAt) {
+			delete(c.data, key)
+		}
+	}
+	c.mu.Unlock()
+}
+
+var storeMem = newStoreCache(30 * time.Second)
 var storeKeyLength = 5
 
 func storeSet(data []byte) (string, error) {
-	key := generateRandomString(storeKeyLength)
-	if err := storeMem.Set(key, data, time.Minute*time.Duration(storeExpireTime)); err != nil {
-		return "", nil
+	for i := 0; i < 8; i++ {
+		key := generateRandomString(storeKeyLength)
+		if storeMem.has(key) {
+			continue
+		}
+		storeMem.set(key, data, time.Minute*time.Duration(storeExpireTime))
+		return key, nil
 	}
-	return key, nil
+	return "", errors.New("store key generation failed")
 }
 
 func storeGet(hash string) ([]byte, error) {
-	result, ok := storeMem.Get(hash)
+	result, ok := storeMem.get(hash)
 	if !ok {
 		return nil, nil
 	}
-	value, ok := result.([]byte)
-	if !ok {
-		return nil, nil
-	}
-	return value, nil
+	return result, nil
 }
 
 func printMemSize(bytes uint64) string {

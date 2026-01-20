@@ -1,6 +1,4 @@
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/OrlovEvgeny/go-mcache v0.0.0-20250603193050-187571917d11 h1:whwDWBTdTzDyS3c1uig5NrQECQKU+EH2rIE3qexBcAg=
-github.com/OrlovEvgeny/go-mcache v0.0.0-20250603193050-187571917d11/go.mod h1:7/iSly/vHf9G8/bn0E18LVVLtDn/0HZ2VsPJzE8vK8Q=
 github.com/apex/gateway/v2 v2.0.0 h1:tJwKiB7ObbXuF3yoqTf/CfmaZRhHB+GfilTNSCf1Wnc=
 github.com/apex/gateway/v2 v2.0.0/go.mod h1:y+uuK0JxdvTHZeVns501/7qklBhnDHtGU0hfUQ6QIfI=
 github.com/aws/aws-lambda-go v1.17.0/go.mod h1:FEwgPLE6+8wcGBTe5cJN3JWurd1Ztm9zN4jsXsjzKKw=

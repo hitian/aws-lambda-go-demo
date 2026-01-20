@@ -3,7 +3,6 @@ module aws-lambda-go-demo
 go 1.25
 
 require (
-	github.com/OrlovEvgeny/go-mcache v0.0.0-20250603193050-187571917d11
 	github.com/aws/aws-lambda-go v1.50.0 // indirect
 	github.com/gin-gonic/gin v1.11.0
 	github.com/go-playground/validator/v10 v10.28.0 // indirect
